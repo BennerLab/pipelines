@@ -2,8 +2,6 @@
 [![snakemake](https://img.shields.io/badge/snakemake-%3E%3D%204.6.0-blue.svg)](https://snakemake.readthedocs.io/en/stable/)
 [![singularity](https://img.shields.io/badge/singularity-%3E%3D%202.4.2-blue.svg)](http://singularity.lbl.gov/)
 
-# ChIP-seq pipeline + Singularity + Snakemake + SCIF
-
 This pipeline implements a Snakemake workflow and uses the Scientific Filesystem (SCIF) + Singularity containers to provide a reproducible research environment.
 
 ## What is here?
@@ -12,10 +10,11 @@ This pipeline implements a Snakemake workflow and uses the Scientific Filesystem
 * **Singularity:** Includes the build recipe for the main Singularity container. Can more or less be copied over for implementation of other genomics pipelines.
 * **Snakefile:** Defines the rules and steps of the workflow. Used by Snakemake.
 * **config.yaml:** A placeholder config file that is used by Snakemake to define various parameters. Can be used to allow for custom output file names as well as customizing tool parameters.
+* **project.scif:** This file installs all the applications/tools required using the same scientific filesystem recipe.
 
 ## Building Singularity Container
 
-Singularity requires sudo access for building, this it is suggested to build the container on your laptop/personal computer and then scp the finished container onto your cluster.
+Singularity requires sudo access for building, thus it is suggested to build the container on your laptop/personal computer and then scp the finished container onto your cluster.
 
 ```
 sudo singularity build chip-seq-pipeline.simg Singularity
