@@ -1,0 +1,89 @@
+configfile: "config.yaml"
+workdir: "/scif/data"
+
+# define samples
+SAMPLES, = glob_wildcards("raw_data/{sample}.fastq.gz")
+
+rule all:
+	input:
+		expand("raw_data/fastp/{sample}.fastp_fastqc.zip", sample=SAMPLES),
+		expand("raw_data/fastp/{sample}.fastp_fastqc.html", sample=SAMPLES),
+		expand("processed_data/bigwigs/{sample}.BPMnorm.bw", sample=SAMPLES),
+		expand("processed_data/qc/{sample}/{sample}.stats.txt", sample=SAMPLES),
+		expand("processed_data/{sample}.sorted.bam.bai", sample=SAMPLES),
+		expand("processed_data/tag_directories/{sample}", sample=SAMPLES)
+
+rule fastp:
+	input:
+		"raw_data/{sample}.fastq.gz"
+	params:
+		prefix="{sample}"
+	log:
+		"logs/fastp/{sample}.log"
+	output:
+		fastq="raw_data/fastp/{sample}.fastp.fastq.gz",
+		html="raw_data/fastp_report/{sample}.html",
+		json="raw_data/fastp_report/{sample}.json"
+	shell:
+		"scif run fastp '-i $SCIF_DATA/{input} -o $SCIF_DATA/{output.fastq} -h $SCIF_DATA/{output.html} -R {params.prefix} -j $SCIF_DATA/{output.json} -w 8 &> $SCIF_DATA/{log}'"
+
+rule fastqc:
+	input:
+		"raw_data/fastp/{sample}.fastp.fastq.gz"
+	output:
+		"raw_data/fastp/{sample}.fastp_fastqc.zip",
+		"raw_data/fastp/{sample}.fastp_fastqc.html"
+	shell:
+		"scif run fastqc $SCIF_DATA/{input}"
+
+rule bowtie2_mapping:
+	input:
+		"raw_data/fastp/{sample}.fastp.fastq.gz"
+	params:
+		index="raw_data/Bowtie2Index/genome",
+		prefix="{sample}"
+	output:
+		"processed_data/{sample}.sorted.bam"
+	shell:
+		"scif run bowtie2 '-q --very-sensitive-local -N 1 -p 50 -x {params.index} {input} | samtools sort -n -O bam -T {params.prefix} -@ 50 - | samtools fixmate -m - - | samtools sort - -@ 50 | samtools markdup - $SCIF_DATA/{output}'"
+
+rule samtools_index:
+	input:
+		"processed_data/{sample}.sorted.bam"
+	output:
+		"processed_data/{sample}.sorted.bam.bai"
+	shell:
+		"scif --quiet run samtools 'index $SCIF_DATA/{input}'"
+
+rule quality_metrics:
+	input:
+		"processed_data/{sample}.sorted.bam"
+	params:
+		prefix="{sample}",
+		outprefix="processed_data/qc/{sample}",
+		gt="raw_data/hg19.chrom.sizes"
+	output:
+		"processed_data/qc/{sample}/{sample}.stats.txt"
+	shell:
+		"scif run ssp '-i $SCIF_DATA/{input} -o {params.prefix} --gt {params.gt} -p 50 --odir $SCIF_DATA/{params.outprefix}'"
+
+rule create_bigwig:
+	input:
+		bam="processed_data/{sample}.sorted.bam",
+		bam_index="processed_data/{sample}.sorted.bam.bai"
+	output:
+		"processed_data/bigwigs/{sample}.BPMnorm.bw"
+	log:
+		"logs/bamcoverage/{sample}.log"
+	shell:
+		"scif run deeptools '-b $SCIF_DATA/{input.bam} -o $SCIF_DATA/{output} -bs 1 -p 50 -e 150 --normalizeUsing BPM 2> $SCIF_DATA/{log}'"
+
+rule create_tag_directories:
+	input:
+		"processed_data/{sample}.sorted.bam"
+	output:
+		"processed_data/tag_directories/{sample}"
+	log:
+		"logs/tagdirectories/{sample}.log"
+	shell:
+		"scif run homer '$SCIF_DATA/{output} $SCIF_DATA/{input} 2> $SCIF_DATA/{log}'"

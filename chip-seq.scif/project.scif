@@ -1,0 +1,127 @@
+%appfiles setup
+    /Snakefile
+    /config.yaml
+%apprun setup
+    if [ ! -e "${SCIF_DATA}/Snakefile" ]; then
+        echo "Copying Snakefile to $SCIF_DATA"
+        cp /Snakefile ${SCIF_DATA}/Snakefile
+    fi
+    if [ ! -e "${SCIF_DATA}/config.yaml" ]; then
+        echo "Copying config.yaml to $SCIF_DATA"
+        cp /config.yaml ${SCIF_DATA}/config.yaml
+    fi
+
+%appinstall fastp
+	# Install fastp
+	/opt/conda/bin/conda install --yes fastp=0.12.5
+%apphelp fastp
+	Fastp Trimmer and Filtering Tool
+%apprun fastp
+	cd $SCIF_DATA
+	exec /opt/conda/bin/fastp "$@"
+%applabels fastp
+	VERSION 0.12.5
+%apptest fastp
+	fastp "$@"
+
+%appinstall fastqc
+	# Install fastqc
+	/opt/conda/bin/conda install --yes conda-forge::openjdk fastqc=0.11.7
+%apphelp fastqc
+	FastQC Quality Control
+%apprun fastqc
+	cd $SCIF_DATA
+	exec /opt/conda/bin/fastqc "$@"
+%applabels fastqc
+	VERSION 0.11.7
+%apptest fastqc
+	fastqc "$@"
+
+%appinstall bowtie2
+	# Install bowtie2
+	/opt/conda/bin/conda install --yes bowtie2=2.3.4
+%apphelp bowtie2
+	Bowtie2 Aligner
+%apprun bowtie2
+	cd $SCIF_DATA
+	exec /opt/conda/bin/bowtie2 "$@"
+%applabels bowtie2
+	VERSION 2.3.4
+%apptest bowtie2
+	bowtie2 "$@"
+
+%appinstall bedops
+	# Install bedops
+	/opt/conda/bin/conda install --yes bedops=2.4.30
+%apphelp bedops
+	Genome analysis toolkit
+%apprun bedops
+	cd $SCIF_DATA
+	exec /opt/conda/bin/bedops "$@"
+%applabels bedops
+	VERSION 2.4.30
+%apptest bedops
+	bedops "$@"
+
+%appinstall samtools
+        # Install samtools
+        /opt/conda/bin/conda install --yes samtools=1.7
+%apphelp samtools
+        Tools for manipulating alignments in SAM/BAM format
+%apprun samtools
+	cd $SCIF_DATA
+        exec /opt/conda/bin/samtools "$@"
+%applabels samtools
+        VERSION 1.7
+%apptest samtools
+        samtools "$@"
+
+%appinstall deeptools
+	# Install deeptools
+	/opt/conda/bin/conda install --yes deeptools=3.0.1
+%apphelp deeptools
+	Tools for generating bigwig files
+%apprun deeptools
+	cd $SCIF_DATA
+	exec /opt/conda/bin/bamCoverage "$@"
+%applabels deeptools
+	VERSION 3.0.1
+%apptest deeptools
+	bamCoverage "$@"
+
+%appinstall ssp
+	# Install SSP
+	git clone https://github.com/rnakato/SSP.git
+	cd SSP
+	make
+	mv bin/ssp ../bin
+%apphelp ssp
+	Tool to check quality control of ChIP-seq data
+%apprun ssp
+	cd $SCIF_DATA
+	exec ssp "$@"
+%applabels ssp
+	VERSION 1.1.0
+%apptest ssp
+	ssp "$@"
+
+%appenv homer
+	PATH=$PATH:/opt/conda/bin
+	export PATH
+%appinstall homer
+	# Install homer and hg38 data
+	apt-get -y install unzip zip
+	wget http://homer.ucsd.edu/homer/configureHomer.pl
+	perl configureHomer.pl -install
+%apphelp homer
+	Toolkit for motif discovery and next-gen sequencing analysis
+	makeTagDirectory
+%apprun homer
+	exec /scif/apps/homer/bin/makeTagDirectory "$@"
+
+%apphelp snakemake
+	Run snakemake. The workflow is defined by a Snakefile that should be located in the $SCIF_DATA folder. This app does not provide snakemake itself, because it is already installed in the Singularity/Docker container. But it would be easy to install snakemake also in the app context. The Snakefile should be present in the folder. If not, we copy the one provided by the snakemake application.
+%apprun snakemake
+	/bin/bash ${SCIF_APPRUN_setup}
+	cd ${SCIF_DATA}
+	/opt/conda/bin/snakemake "$@"
