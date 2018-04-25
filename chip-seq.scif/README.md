@@ -2,8 +2,7 @@
 [![snakemake](https://img.shields.io/badge/snakemake-%3E%3D%204.6.0-blue.svg)](https://snakemake.readthedocs.io/en/stable/)
 [![singularity](https://img.shields.io/badge/singularity-%3E%3D%202.4.2-blue.svg)](http://singularity.lbl.gov/)
 
-# Svenner Lab Documentation
-## ChIP-seq pipeline + Singularity + Snakemake + SCIF
+# ChIP-seq pipeline + Singularity + Snakemake + SCIF
 
 This pipeline implements a Snakemake workflow and uses the Scientific Filesystem (SCIF) + Singularity containers to provide a reproducible research environment.
 
