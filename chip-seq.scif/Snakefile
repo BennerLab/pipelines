@@ -44,8 +44,9 @@ rule bowtie2_mapping:
 		prefix="{sample}"
 	output:
 		"processed_data/{sample}.sorted.bam"
+	threads: 50
 	shell:
-		"scif run bowtie2 '-q --very-sensitive-local -N 1 -p 50 -x {params.index} {input} | samtools sort -n -O bam -T {params.prefix} -@ 50 - | samtools fixmate -m - - | samtools sort - -@ 50 | samtools markdup - $SCIF_DATA/{output}'"
+		"scif run bowtie2 '-q --very-sensitive-local -N 1 -p {threads} -x {params.index} {input} | samtools sort -n -O bam -T {params.prefix} -@ {threads} - | samtools fixmate -m - - | samtools sort - -@ {threads} | samtools markdup - $SCIF_DATA/{output}'"
 
 rule samtools_index:
 	input:
@@ -61,11 +62,12 @@ rule quality_metrics:
 	params:
 		prefix="{sample}",
 		outprefix="processed_data/qc/{sample}",
-		gt="raw_data/hg19.chrom.sizes"
+		gt="raw_data/genome.chrom.sizes"
 	output:
 		"processed_data/qc/{sample}/{sample}.stats.txt"
+	threads: 10
 	shell:
-		"scif run ssp '-i $SCIF_DATA/{input} -o {params.prefix} --gt {params.gt} -p 50 --odir $SCIF_DATA/{params.outprefix}'"
+		"scif run ssp '-i $SCIF_DATA/{input} -o {params.prefix} --gt {params.gt} -p {threads} --odir $SCIF_DATA/{params.outprefix}'"
 
 rule create_bigwig:
 	input:
@@ -75,8 +77,9 @@ rule create_bigwig:
 		"processed_data/bigwigs/{sample}.BPMnorm.bw"
 	log:
 		"logs/bamcoverage/{sample}.log"
+	threads: 50
 	shell:
-		"scif run deeptools '-b $SCIF_DATA/{input.bam} -o $SCIF_DATA/{output} -bs 1 -p 50 -e 150 --normalizeUsing BPM 2> $SCIF_DATA/{log}'"
+		"scif run deeptools '-b $SCIF_DATA/{input.bam} -o $SCIF_DATA/{output} -bs 1 -p {threads} -e 150 --normalizeUsing BPM 2> $SCIF_DATA/{log}'"
 
 rule create_tag_directories:
 	input:
