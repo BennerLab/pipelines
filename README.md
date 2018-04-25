@@ -8,4 +8,4 @@ This repository contains the Svenner lab pipelines for various types of sequenci
 
 ## Pipelines
 
-* [ChIP-seq Pipeline](https://github.com/BennerLab/pipelines/blob/master/chip-seq.scif/README.md)
+* [ChIP-seq Pipeline](https://github.com/BennerLab/pipelines/tree/master/chip-seq.scif)
