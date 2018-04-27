@@ -19,7 +19,7 @@ output=''
 while getopts 'j::hfi:o:' flag; do
 	case "${flag}" in
 		j) jflag="$OPTARG" ;;
-		h) printf "\nUSAGE: bash %s -j=%s -i </path/to/fastq/dir> -o <output_folder_name>\n" $0 $jflag
+		h) printf "\nUSAGE: bash %s -f=false -j=%s -i </path/to/fastq/dir> -o <output_folder_name>\n" $0 $jflag
 		   exit 0 ;;
 		f) fast='true' ;;
 		i) input="$OPTARG" ;;
