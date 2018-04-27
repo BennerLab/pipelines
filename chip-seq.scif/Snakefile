@@ -13,6 +13,11 @@ rule all:
 		expand("processed_data/{sample}.sorted.bam.bai", sample=SAMPLES),
 		expand("processed_data/tag_directories/{sample}", sample=SAMPLES)
 
+rule all_tagdirectories:
+	input:
+		expand("processed_data/{sample}.sorted.bam.bai", sample=SAMPLES),
+		expand("processed_data/tag_directories/{sample}", sample=SAMPLES)
+
 rule fastp:
 	input:
 		"raw_data/{sample}.fastq.gz"
@@ -67,7 +72,7 @@ rule quality_metrics:
 		"processed_data/qc/{sample}/{sample}.stats.txt"
 	threads: 10
 	shell:
-		"scif run ssp '-i $SCIF_DATA/{input} -o {params.prefix} --gt {params.gt} -p {threads} --odir $SCIF_DATA/{params.outprefix}'"
+		"scif --quiet run ssp '-i $SCIF_DATA/{input} -o {params.prefix} --gt {params.gt} -p {threads} --odir $SCIF_DATA/{params.outprefix}'"
 
 rule create_bigwig:
 	input:
