@@ -77,7 +77,7 @@ bash /gpfs/data01/heinzlab/home/cag104/bin/chip-seq-pipeline/run_chip-seq-pipeli
 
 <-f> can be specified if you only want to do a 'fast' pre-processing that includes trimming, mapping, and generating tag directories. Takes no arguments. (Default: false)
 
-<-j> is the number of cores that snakemake uses. By default this is set to 60, which means that Snakemake will make complete use of up to 60 cores. If a mapping job takes up 50 cores, then Snakemake will fill the other 10 cores with smaller jobs such as samtools index. If you use less cores than the number of threads requested in the Snakemake file then all jobs will use the number of threads specified in this option. Example: Bowtie2 mapping uses 50 cores by default, if -j 30 is set then all Bowtie2 mapping jobs will use 30 cores instead of the default 50.
+<-j> is the number of cores that snakemake uses. By default this is set to 56, which means that Snakemake will make complete use of up to 56 cores. If a mapping job takes up 50 cores, then Snakemake will fill the other 6 cores with smaller jobs such as samtools index. If you use less cores than the number of threads requested in the Snakemake file then all jobs will use the number of threads specified in this option. Example: Bowtie2 mapping uses 50 cores by default, if -j 30 is set then all Bowtie2 mapping jobs will use 30 cores instead of the default 50.
 
 <-i> is the path to the file directory where your fastq.gz files are kept (typically in /gpfs/data01/demux). Please ensure that there is no / at the end of your path. Example: `/gpfs/data01/demux/171221_NB501406_0204_AH753VBGX5/Carlos`.
 
