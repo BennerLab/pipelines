@@ -29,8 +29,9 @@ rule fastp:
 		fastq="raw_data/fastp/{sample}.fastp.fastq.gz",
 		html="raw_data/fastp_report/{sample}.html",
 		json="raw_data/fastp_report/{sample}.json"
+	threads: 3
 	shell:
-		"scif run fastp '-i $SCIF_DATA/{input} -o $SCIF_DATA/{output.fastq} -h $SCIF_DATA/{output.html} -R {params.prefix} -j $SCIF_DATA/{output.json} -w 8 &> $SCIF_DATA/{log}'"
+		"scif run fastp '-i $SCIF_DATA/{input} -o $SCIF_DATA/{output.fastq} -h $SCIF_DATA/{output.html} -R {params.prefix} -j $SCIF_DATA/{output.json} -w {threads} &> $SCIF_DATA/{log}'"
 
 rule fastqc:
 	input:
@@ -39,7 +40,7 @@ rule fastqc:
 		"raw_data/fastp/{sample}.fastp_fastqc.zip",
 		"raw_data/fastp/{sample}.fastp_fastqc.html"
 	shell:
-		"scif run fastqc $SCIF_DATA/{input}"
+		"scif --quiet run fastqc $SCIF_DATA/{input}"
 
 rule bowtie2_mapping:
 	input:
@@ -82,7 +83,7 @@ rule create_bigwig:
 		"processed_data/bigwigs/{sample}.BPMnorm.bw"
 	log:
 		"logs/bamcoverage/{sample}.log"
-	threads: 50
+	threads: 10
 	shell:
 		"scif run deeptools '-b $SCIF_DATA/{input.bam} -o $SCIF_DATA/{output} -bs 1 -p {threads} -e 150 --normalizeUsing BPM 2> $SCIF_DATA/{log}'"
 

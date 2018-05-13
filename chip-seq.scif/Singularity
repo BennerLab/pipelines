@@ -26,7 +26,7 @@ From: continuumio/miniconda3
 	/opt/conda/bin/scif install /project.scif
 
 	# Install snakemake
-	/opt/conda/bin/conda install --yes snakemake=4.6.0
+	/opt/conda/bin/conda install --yes snakemake=4.8.1
 	/opt/conda/bin/conda install --yes docutils=0.14
 
 %runscript

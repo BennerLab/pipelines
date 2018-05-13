@@ -10,7 +10,7 @@
 # usage: bash run_chip-seq-pipeline-hg38.sh -f=false -j=60 <int> -i </path/to/fastq/directory> -o <output_folder_name>
 
 # command line arguments
-jflag=60
+jflag=56
 hflag=''
 fast='false'
 input=''
@@ -64,9 +64,12 @@ fi
 echo -e "Cleaning up workspace ...\n"
 cp data/Snakefile Snakefile
 cp data/config.yaml config.yaml
+cp /gpfs/data01/heinzlab/home/cag104/bin/chip-seq-pipeline/Singularity Singularity
+cp /gpfs/data01/heinzlab/home/cag104/bin/chip-seq-pipeline/project.scif project.scif
 rm -r data/raw_data/Bowtie2Index
 rm data/raw_data/genome.chrom.sizes
 rm data/raw_data/*.fastq.gz
 rm data/raw_data/fastp/*.fastq.gz
 rm data/Snakefile
 rm data/config.yaml
+rm -r data/.snakemake
