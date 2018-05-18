@@ -1,0 +1,84 @@
+%appfiles setup
+	/Snakefile
+	/config.yaml
+	/concatenate_logs.py
+	/summarize_gene_exp.py
+
+%apprun setup
+	if [ ! -e "${SCIF_DATA}/Snakefile" ]; then
+		echo "Copying Snakefile to $SCIF_DATA"
+		cp /Snakefile ${SCIF_DATA}/Snakefile
+	fi
+	if [ ! -e "${SCIF_DATA}/config.yaml" ]; then
+		echo "Copying config.yaml to $SCIF_DATA"
+		cp /config.yaml ${SCIF_DATA}/config.yaml
+	fi
+	cp /concatenate_logs.py ${SCIF_DATA}
+	cp /summarize_gene_exp.py ${SCIF_DATA}
+
+%appinstall STAR
+	    # Install STAR
+	    /opt/conda/bin/conda install --yes star=2.5.4a
+%apphelp STAR
+	    STAR Aligner
+%apprun STAR
+	    cd $SCIF_DATA
+	    exec /opt/conda/bin/STAR "$@"
+%applabels STAR
+	    VERSION 2.5.4a
+%apptest STAR
+	    STAR "$@"
+
+%appinstall samtools
+        # Install samtools
+        /opt/conda/bin/conda install --yes samtools=1.8
+%apphelp samtools
+        Tools for manipulating alignments in SAM/BAM format
+%apprun samtools
+	    cd $SCIF_DATA
+        exec /opt/conda/bin/samtools "$@"
+%applabels samtools
+        VERSION 1.8
+%apptest samtools
+        samtools "$@"
+
+%appinstall kallisto
+        # Install kallisto
+        /opt/conda/bin/conda install --yes kallisto=0.44.0
+%apphelp kallisto
+        Kallisto transcript quantification
+%apprun kallisto
+        cd $SCIF_DATA
+        exec /opt/conda/bin/kallisto "$@"
+%applabels kallisto
+        VERSION 0.44.0
+%apptest kallisto
+        kallisto "$@"
+
+%appenv makeTagDirectory
+	    PATH=$PATH:/opt/conda/bin
+	    export PATH
+%appinstall makeTagDirectory
+	    # Install homer and hg38 data
+	    apt-get -y install unzip zip
+        /opt/conda/bin/conda install r-essentials \
+                                     bioconductor-deseq2 \
+                                     bioconductor-edger \
+                                     ucsc-bedgraphtobigwig
+
+	    wget http://homer.ucsd.edu/homer/configureHomer.pl
+	    perl configureHomer.pl -install
+%apphelp makeTagDirectory
+	    makeTagDirectory
+%apprun makeTagDirectory
+	    exec /scif/apps/makeTagDirectory/bin/makeTagDirectory "$@"
+
+%apprun makeUCSCfile
+        exec /scif/apps/makeTagDirectory/bin/makeUCSCfile "$@"
+
+%apphelp snakemake
+	    Run snakemake. The workflow is defined by a Snakefile that should be located in the $SCIF_DATA folder. This app does not provide snakemake itself, because it is already installed in the Singularity/Docker container. But it would be easy to install snakemake also in the app context. The Snakefile should be present in the folder. If not, we copy the one provided by the snakemake application.
+%apprun snakemake
+	    /bin/bash ${SCIF_APPRUN_setup}
+	    cd ${SCIF_DATA}
+	    /opt/conda/bin/snakemake "$@"
