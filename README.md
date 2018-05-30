@@ -9,3 +9,4 @@ This repository contains the Svenner lab pipelines for various types of sequenci
 ## Pipelines
 
 * [ChIP-seq Pipeline](https://github.com/BennerLab/pipelines/tree/master/chip-seq.scif)
+* [RNA-seq Multisample Pipeline](https://github.com/BennerLab/pipelines/tree/master/rna-seq-multisamples)
