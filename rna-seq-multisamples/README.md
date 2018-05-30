@@ -15,7 +15,7 @@ samtools faidx GENOME.fa
 cut -f1,2 GENOME.fa.fai > GENOME.chrom.sizes
 cp GENOME.chrom.sizes PARENT_DIRECTORY/data/chrom.sizes
 
-kallisto index -i GENOME.idx  GENOME.fa
+kallisto index -i GENOME.idx  TRANSCRIPTS.fa
 cp GENOME.idx PARENT_DIRECTORY/data/kallisto.idx
 
 mkdir STAR_GENOME
